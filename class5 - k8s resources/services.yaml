@@ -1,0 +1,42 @@
+# 1. ClusterIP - Internal Communication
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: dev
+spec:
+  type: ClusterIP
+  selector:
+    app: demo
+  ports:
+    - port: 80
+      targetPort: 80
+---
+# 2. NodePort - Simple External Access
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-nodeport
+  namespace: dev
+spec:
+  type: NodePort
+  selector:
+    app: demo
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
+---
+# 3. LoadBalancer - Cloud External Access
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-lb
+  namespace: dev
+spec:
+  type: LoadBalancer
+  selector:
+    app: demo
+  ports:
+    - port: 80
+      targetPort: 80
