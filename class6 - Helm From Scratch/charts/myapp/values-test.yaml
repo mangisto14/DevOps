@@ -1,0 +1,10 @@
+
+
+daemonset:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "550m"
+      memory: "1128Mi"
