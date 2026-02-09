@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-backup
+  labels:
+    app: {{ .Values.appLabel }}
+spec:
+  # התזמון נלקח מה-Values (למשל: "0 2 * * *" לכל לילה ב-2:00)
+  schedule: {{ .Values.cronSchedule | default "*/5 * * * *" | quote }}
+  # מה קורה אם המשימה הקודמת עוד לא הסתיימה? (Forbid = אל תתחיל חדשה)
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{ .Values.appLabel }}-cron
+        spec:
+          containers:
+          - name: worker
+            image: busybox:latest
+            command:
+            - /bin/sh
+            - -c
+            - echo "Starting backup task at $(date); sleep 30; echo 'Backup complete!'"
+          # ב-Job/CronJob חייבים להגדיר מה קורה בכישלון (Never או OnFailure)
+          restartPolicy: OnFailure

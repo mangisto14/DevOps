@@ -77,15 +77,15 @@ sh.helm.release.v1.myapp.v1        helm.sh/release.v1   1      3m14s
 # Part 3 – Image Version Upgrade
 >  helm upgrade --install myapp ./charts/myapp >> .\outputs\helm-upgrade.txt
 ```
-    Release "myapp" has been upgraded. Happy Helming!
-    NAME: myapp
-    LAST DEPLOYED: Sun Feb  8 21:17:48 2026
-    NAMESPACE: default
-    STATUS: deployed
-    REVISION: 5
-    DESCRIPTION: Upgrade complete
-    TEST SUITE: None
-    ```
+Release "myapp" has been upgraded. Happy Helming!
+NAME: myapp
+LAST DEPLOYED: Sun Feb  8 21:08:14 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 2
+DESCRIPTION: Upgrade complete
+TEST SUITE: None
+```
 
 
 # Part 4 – Helm History & Rollback
@@ -128,10 +128,60 @@ Save outputs:
 
 # Part 5 – ConfigMap and Secret Usage
 - Explain usage 
-    ```   
-    - ConfigMap: Used for soft settings like URLs, ports, or text that is displayed to the user. This allows you to change the behavior of the application without rebuilding the Docker Image.
+```   
+- ConfigMap: Used for soft settings like URLs, ports, or text that is displayed to the user. This allows you to change the behavior of the application without rebuilding the Docker Image.
 
-    - Secret: Encoded (Base64) and not encrypted, it allows for RBAC and reduces password exposure.
+- Secret: Encoded (Base64) and not encrypted, it allows for RBAC and reduces password exposure.
 
-    - Decoupling: Using Helm makes the system dynamic. The Deployment doesn't "know" what text will be displayed, it just knows that it needs to pull it from the ConfigMap.
-    ```
+- Decoupling: Using Helm makes the system dynamic. The Deployment doesn't "know" what text will be displayed, it just knows that it needs to pull it from the ConfigMap.
+```
+
+# Part 6 – Bonus – External Helm Chart
+#### 1. Add an external Helm repository and update
+> helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+```
+PS C:\Users\repo\DevOps\devops-course\class6 - Helm From Scratch> helm repo add bitnami https://charts.bitnami.com/bitnami
+"bitnami" has been added to your repositories
+PS C:\Users\repo\DevOps\devops-course\class6 - Helm From Scratch>     helm repo update
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "bitnami" chart repository
+Update Complete. ⎈Happy Helming!⎈
+```
+
+```
+helm upgrade --install external-nginx bitnami/nginx `
+--set image.tag=1.23.0 `
+--namespace nginx-test --create-namespace
+```
+#### 2. Use an external Helm chart (e.g., bitnami/nginx) as a dependency
+```
+PS C:\Users\repo\DevOps\devops-course\class6 - Helm From Scratch> helm dependency update ./charts/myapp
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "bitnami" chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 1 charts
+Downloading nginx from repo https://charts.bitnami.com/bitnami
+Deleting outdated charts
+```
+
+#### 4. Override values to match your local deployment (e.g., image tag, service type, port):
+
+```
+PS C:\Users\repo\DevOps\devops-course\class6 - Helm From Scratch> helm upgrade --install myapp -n dev --create-namespace ./charts/myapp >> .\outputs\helm-upgrade.txt --set nginx.image.tag=1.23.0 --set nginx.service.type=ClusterIP  --set nginx.service.ports.http=8080  
+```
+#### kubectl get pods -n dev
+```
+PS C:\Users\repo\DevOps\devops-course\class6 - Helm From Scratch> kubectl get pods -n dev
+NAME                              READY   STATUS                  RESTARTS   AGE
+app-deployment-7c858774b9-84j96   1/1     Running                 0          28h
+app-deployment-7c858774b9-97nfr   1/1     Running                 0          28h
+app-deployment-7c858774b9-t427z   1/1     Running                 0          28h
+app-deployment-7c858774b9-wgwl4   1/1     Running                 0          28h
+app-deployment-7c858774b9-z4ndh   1/1     Running                 0          28h
+myapp-deploy-579bf9c664-6k4sz     1/1     Running                 0          17m
+myapp-deploy-579bf9c664-6ns8d     1/1     Running                 0          17m
+myapp-logger-652x5                1/1     Running                 0          17m
+myapp-nginx-59f94cbf64-hmdkh      0/1     Init:ImagePullBackOff   0          79s
+myapp-setup-job-2hwll             0/1     Completed               0          25m
+```
