@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Values.appLabel }}-logger
+  labels:
+    app: {{ .Values.appLabel }}-logging
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.appLabel }}-logging
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appLabel }}-logging
+    spec:
+      containers:
+        - name: logger
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          args: {{ .Values.image.args | toJson }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+            
+          resources:
+            requests:
+              cpu: {{ .Values.daemonset.resources.requests.cpu }}
+              memory: {{ .Values.daemonset.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.daemonset.resources.limits.cpu }}
+              memory: {{ .Values.daemonset.resources.limits.memory }}
