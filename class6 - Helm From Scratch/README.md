@@ -21,6 +21,15 @@ To install the chart for the first time or update an existing one:
 helm upgrade --install myapp ./charts/myapp
 ```
 
+## 📥 Prerequisites & Dependencies
+Since this chart uses external dependencies (like Nginx), you must fetch them before installing:
+> Bash
+```
+# From the charts/myapp directory:
+helm dependency update
+
+```
+
 ### 2. Version Upgrade
 After updating the image.tag in values.yaml:
 > Bash
