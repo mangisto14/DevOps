@@ -1,0 +1,6 @@
+loki:
+  enabled: true
+promtail:
+  enabled: true
+prometheus:
+  enabled: false # כי כבר התקנת אותו בנפרד קודם

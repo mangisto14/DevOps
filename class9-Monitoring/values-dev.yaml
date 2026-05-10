@@ -1,0 +1,26 @@
+grafana:
+ adminPassword: devadmin
+ service:
+   type: ClusterIP
+
+prometheus:
+ prometheusSpec:
+   retention: 7d
+
+alerting:
+ alertmanagers:
+   - namespace: monitoring-dev
+     name: alertmanager
+     port: web
+
+prometheusrules:
+ groups:
+   - name: node-alerts
+     rules:
+       - alert: HighCPU
+         expr: vector(1)
+         for: 10s
+         labels:
+           severity: warning
+         annotations:
+           summary: "High CPU usage detected"

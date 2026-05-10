@@ -1,0 +1,8 @@
+grafana:
+  additionalDataSources:
+    - name: Alertmanager
+      isDefault: false
+  adminPassword: WhG:9Pk8mx6U7Rx # שנה לסיסמה שתרצה
+prometheus:
+  prometheusSpec:
+    retention: 1d # כמה זמן לשמור מידע (יום אחד כדי לא להעמיס על המחשב)

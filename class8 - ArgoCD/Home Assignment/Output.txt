@@ -1,0 +1,3 @@
+Assignment
+
+argocd-initial-admin-secret = QPIEFWrqn3ZME3fM

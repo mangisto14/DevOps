@@ -1,0 +1,18 @@
+grafana:
+ adminPassword: prodadmin
+ service:
+   type: ClusterIP
+
+prometheus:
+ prometheusSpec:
+   retention: 30d
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+replicaCount: 2
