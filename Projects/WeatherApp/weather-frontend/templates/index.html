@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-backend-url="{{ backend_url }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌤️ Weather Dashboard</h1>
+            <p class="subtitle">Get real-time weather data for major cities</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="form-section">
+                    <label for="city-select">Select a City:</label>
+                    <select id="city-select">
+                        <option value="">-- Choose a city --</option>
+                        <option value="newyork">New York</option>
+                        <option value="sydney">Sydney</option>
+                        <option value="capetown">Cape Town</option>
+                        <option value="bangkok">Bangkok</option>
+                    </select>
+                    
+                    <button id="get-weather-btn" onclick="getWeather()">Get Weather</button>
+                </div>
+
+                <div id="loading" class="loading" style="display: none;">
+                    <p>Loading weather data...</p>
+                </div>
+
+                <div id="error" class="error" style="display: none;">
+                    <p id="error-message"></p>
+                </div>
+
+                <div id="weather-result" class="weather-result" style="display: none;">
+                    <div class="weather-header">
+                        <h2 id="city-name"></h2>
+                    </div>
+
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <span class="label">Temperature</span>
+                            <span class="value" id="temperature"></span>
+                        </div>
+
+                        <div class="weather-item">
+                            <span class="label">Condition</span>
+                            <span class="value" id="description"></span>
+                        </div>
+
+                        <div class="weather-item">
+                            <span class="label">Humidity</span>
+                            <span class="value" id="humidity"></span>
+                        </div>
+
+                        <div class="weather-item">
+                            <span class="label">Wind Speed</span>
+                            <span class="value" id="wind-speed"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Weather data provided by OpenWeatherMap</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
