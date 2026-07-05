@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # Weather Backend Service
   backend:
     build:
       context: ./weather-backend
@@ -12,8 +11,15 @@ services:
     environment:
       - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY:-your_api_key_here}
       - FLASK_ENV=development
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://weatheruser:weatherpass@postgres:5432/weatherdb
     networks:
       - weather-network
+    depends_on:
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
@@ -24,7 +30,6 @@ services:
     volumes:
       - ./weather-backend:/app
 
-  # Weather Frontend Service
   frontend:
     build:
       context: ./weather-frontend
@@ -50,8 +55,43 @@ services:
     volumes:
       - ./weather-frontend:/app
 
+  redis:
+    image: redis:7-alpine
+    container_name: weather-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - weather-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: weather-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=weatherdb
+      - POSTGRES_USER=weatheruser
+      - POSTGRES_PASSWORD=weatherpass
+    networks:
+      - weather-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U weatheruser -d weatherdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 networks:
   weather-network:
     driver: bridge
 
-volumes: {}
+volumes:
+  postgres_data:
